@@ -9,28 +9,64 @@
 
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
+// Wrap everything in an anonymous function in order to avoid potential namespace collisions
 (function($, window, Calculator){
     "use strict";
-
-    Calculator = function (container, settings) {
-        this.container = $(container);
-        var priv, self = this;
-        console.log(container);
-    }
-
+    
+    // jQuery plugin declaration
     $.fn.extend({ 
         jscalc: function(options) {
             var defaults = {
                 height: '300px',
-                width: '300px'
+                width: '300px',
+                css : {
+                    container : 'js-calc',
+                    button: 'button'
+                },
+                buttons : [
+                    ['7', '8', '9', '/', 'sqrt'],
+                    ['4', '5', '6', '*', '%'],
+                    ['1', '2', '3', '-', '1/x'],
+                    ['0', '+/-', '.', '+', '=']
+                ]
             }
             
-            var options =  $.extend(defaults, options);
+            var options = $.extend(defaults, options);
             
             return this.each(function() {
-                var o = options;
-                var calculator = new Calculator(this); 
+                var calculator = new Calculator();
+                calculator.init(this, options);
             });
         }
     });
+
+    // Classes
+    Calculator = function(){}
+
+    Calculator.prototype = {
+        init : function(container, settings) {
+            this.container = $(container);
+            this.buttons = {};
+            var defaults, calc, buttons, operations;
+            
+            for (var i in settings.buttons){
+                var row = settings.buttons[i];
+                for (var c in row){
+                    var name = row[c];
+                    this.buttons[name] = new this.Button(name); 
+                }
+            }
+        }
+    };
+
+    Calculator.prototype.Button = function(value){
+        this.name = value;
+        this.element = $('<div />')
+            .addClass('button')
+            .click(function(){
+                console.log('congrats!');
+            });
+        return this;
+    };
+
 })(jQuery);
