@@ -20,6 +20,7 @@
     display: block;
     text-align: right;
     font-size: 2em;
+    text-shadow: .1em .1em .05em #ffffff;
 }
 
 .jscalc .button{

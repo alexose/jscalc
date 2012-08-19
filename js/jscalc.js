@@ -28,11 +28,19 @@
                     active: 'active'
                 },
                 buttons : [
-                    ['', '', '', '', 'C'],
+                    ['(', ')', '', '', 'C'],
                     ['7', '8', '9', '/', 'sqrt'],
                     ['4', '5', '6', '*', '%'],
                     ['1', '2', '3', '-', '1/x'],
                     ['0', '+/-', '.', '+', '=']
+                ],
+                operators : [
+                    { '=' : 'solve' },
+                    { '1/x' : 'inverse' },
+                    { '%' : 'percentage' },
+                    { 'squareroot' : 'squareroot' },
+                    { 'C' : 'clear' },
+                    { '+/-' : 'signflip' }
                 ]
             }
             
@@ -51,6 +59,7 @@
     Calculator.prototype = {
         init : function(container, options) {
             this.options = options;
+            this.calculator = this;
             this.container = $(container)
                 .height(options.height)
                 .width(options.width)
@@ -84,6 +93,23 @@
             }
         },
 
+        clear : function(){
+            this.screen.setExpression('');
+            return;
+        },
+        
+        percentage : function(){
+            return;
+        },
+
+        inverse : function(){
+            return;
+        },
+
+        signflip: function(){
+            return;
+        },
+
         validate : function(expression){
             // Match parentheses
             if (expression.split('(').length !== expression.split(')').length)
@@ -104,10 +130,19 @@
             } catch (e){
                 console.log(e.name + " " + e.message);
             }
-            var arr;
 
-            // Apply order of operations (PEMDAS!)
-            arr = expression.split('(');
+            // Recursive function to break apart parenthetical statements
+            var breakApart = function(expression){
+                if (expression.indexOf('(') !== -1)
+                    breakApart(expression.match(/\((.*?)\)/));    
+                else
+                    calculate(expression)
+            };
+
+            var calculate = function(expression){
+                console.log(expression)
+            };
+            breakApart(expression);
         }
     };
 
@@ -141,6 +176,10 @@
 
         getExpression : function(){
             return this.span.text();
+        },
+
+        setExpression : function(value){
+            return this.span.text(value);
         }
     }
 
@@ -154,6 +193,22 @@
             this.name = value;
             this.calculator = calculator;
             var options = this.options = calculator.options;
+
+            // Match this button against available operators
+            // TODO: avoid these nested for loops
+            for (var i in options.operators){
+                var obj = options.operators[i];
+                for (var name in obj){ 
+                    if (this.name == name){
+                        var method = obj[name];
+                        if (typeof(this.calculator[method] == 'function'))
+                            this.run = $.proxy(this.calculator[method], this.calculator);
+                        else
+                            throw new Error('Invalid operator.');
+                    }
+                }
+            }
+
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.cellWidth)
@@ -171,9 +226,10 @@
                 }, this));
             return this;
         },
+        
+        // Default action.  This will be overridden during init in some cases.
         run : function(){
             this.calculator.screen.display(this.name);
-            this.calculator.solve();
         }
     };
 
