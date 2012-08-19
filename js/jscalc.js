@@ -44,7 +44,6 @@
         }
     });
 
-    // Classes
     Calculator = function(ele, o){
         this.init(ele, o);
     };
@@ -65,19 +64,16 @@
 
             // Create & resize screen
             var screen = this.screen = new Calculator.Screen('screen', options);
-
             // Append screen element to DOM
-            screen.element
-                .appendTo(this.container);
+            screen.element.appendTo(this.container);
  
             // Create buttons
             this.buttons = {};
             for (var i in options.buttons){
                 var row = options.buttons[i];
                 for (var c in row){
-
                     var name = row[c];
-                    var button = this.buttons[name] = new Calculator.Button(name, screen, options);
+                    var button = this.buttons[name] = new Calculator.Button(name, this, options);
                     var cssClass = (c == 0) ? options.css.first : '';
                     
                     // Append element to DOM
@@ -86,6 +82,32 @@
                         .appendTo(this.container);
                 }
             }
+        },
+
+        validate : function(expression){
+            // Match parentheses
+            if (expression.split('(').length !== expression.split(')').length)
+                return false;
+            
+            // Prevent divide by zero
+            if (expression == 0)
+                return false;
+
+            return true;
+        },
+
+        solve : function(){
+            var expression = this.screen.getExpression();
+            try{
+                if (!this.validate(expression))
+                    throw new Error "Validation failed.";
+            } catch (e){
+                console.log(e.name + " " + e.message);
+            }
+            var arr;
+
+            // Apply order of operations (PEMDAS!)
+            arr = expression.split('(');
         }
     };
 
@@ -115,18 +137,23 @@
                 return;
             this.span.text(val + '' + value);
             return;
+        },
+
+        getExpression : function(){
+            return this.span.text();
         }
     }
 
     // Button class.  Takes user input.
-    Calculator.Button = function(name, screen, options){
-        this.init(name, screen, options);
+    Calculator.Button = function(name, calculator){
+        this.init(name, calculator);
     };
 
     Calculator.Button.prototype = {
-        init : function(value, screen, options){
+        init : function(value, calculator){
             this.name = value;
-            this.screen = screen;
+            this.calculator = calculator;
+            var options = this.options = calculator.options;
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.cellWidth)
@@ -145,8 +172,8 @@
             return this;
         },
         run : function(){
-            console.log(this.name); 
-            this.screen.display(this.name);
+            this.calculator.screen.display(this.name);
+            this.calculator.solve();
         }
     };
 
