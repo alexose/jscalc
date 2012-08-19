@@ -1,3 +1,63 @@
 .jscalc{
     position: relative;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.jscalc .screen{
+    background: #ddd;
+}
+
+.jscalc .button{
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+
+    /* Cross-browser gradient code via http://www.colorzilla.com/gradient-editor/ */
+    background: rgb(242,246,248); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(242,246,248,1) 0%, rgba(216,225,231,1) 50%, rgba(181,198,208,1) 51%, rgba(224,239,249,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(242,246,248,1)), color-stop(50%,rgba(216,225,231,1)), color-stop(51%,rgba(181,198,208,1)), color-stop(100%,rgba(224,239,249,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f6f8', endColorstr='#e0eff9',GradientType=0 ); /* IE6-9 */
+}
+
+.jscalc .button.active{
+    background: rgb(224,239,249); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(224,239,249,1) 0%, rgba(181,198,208,1) 49%, rgba(216,225,231,1) 50%, rgba(242,246,248,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(224,239,249,1)), color-stop(49%,rgba(181,198,208,1)), color-stop(50%,rgba(216,225,231,1)), color-stop(100%,rgba(242,246,248,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(224,239,249,1) 0%,rgba(181,198,208,1) 49%,rgba(216,225,231,1) 50%,rgba(242,246,248,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(224,239,249,1) 0%,rgba(181,198,208,1) 49%,rgba(216,225,231,1) 50%,rgba(242,246,248,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(224,239,249,1) 0%,rgba(181,198,208,1) 49%,rgba(216,225,231,1) 50%,rgba(242,246,248,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(224,239,249,1) 0%,rgba(181,198,208,1) 49%,rgba(216,225,231,1) 50%,rgba(242,246,248,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0eff9', endColorstr='#f2f6f8',GradientType=0 ); /* IE6-9 */
+}
+
+.jscalc .button.first{
+    clear: left;
+}
+
+.jscalc .button span{
+    pointer-events:none;
+    display: block;
+    padding: .7em 0;
+    color: #555;
+    font-size: 1.5em;
+    text-shadow: .1em .1em .05em #ffffff;
+   
+    /* Prevent text selection via http://stackoverflow.com/questions/826782/css-rule-to-disable-text-selection-highlighting */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;  
+}
+
+.clear{
+    clear: both;
 }

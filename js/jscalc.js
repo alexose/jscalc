@@ -20,8 +20,10 @@
                 height: '300px',
                 width: '300px',
                 css : {
-                    container : 'js-calc',
-                    button: 'button'
+                    container : 'jscalc',
+                    button: 'button',
+                    first: 'first',
+                    active: 'active'
                 },
                 buttons : [
                     ['7', '8', '9', '/', 'sqrt'],
@@ -34,39 +36,89 @@
             var options = $.extend(defaults, options);
             
             return this.each(function() {
-                var calculator = new Calculator();
-                calculator.init(this, options);
+                var calculator = new Calculator(this, options);
             });
         }
     });
 
     // Classes
-    Calculator = function(){}
+    Calculator = function(ele, o){
+        this.init(ele, o);
+    };
 
     Calculator.prototype = {
-        init : function(container, settings) {
-            this.container = $(container);
+        init : function(container, options) {
+            this.container = $(container)
+                .height(options.height)
+                .width(options.width)
+                .addClass(options.css.container);
+
+            var defaults, calc, operations;
+           
+            // Set up screen element
+            var screen = this.screen = new Calculator.Screen('screen', options);
+
+            // Append screen to DOM
+            screen.element
+                .appendTo(this.container);
+ 
+            // Set up button elements
             this.buttons = {};
-            var defaults, calc, buttons, operations;
-            
-            for (var i in settings.buttons){
-                var row = settings.buttons[i];
+            for (var i in options.buttons){
+                var row = options.buttons[i];
                 for (var c in row){
+
                     var name = row[c];
-                    this.buttons[name] = new this.Button(name); 
+                    var button = this.buttons[name] = new Calculator.Button(name, screen, options);
+                    var cssClass = (c == 0) ? options.css.first : '';
+                    
+                    // Append element to DOM
+                    button.element
+                        .addClass(cssClass)
+                        .appendTo(this.container);
                 }
             }
         }
     };
 
-    Calculator.prototype.Button = function(value){
-        this.name = value;
-        this.element = $('<div />')
-            .addClass('button')
-            .click(function(){
-                console.log('congrats!');
-            });
-        return this;
+    // Screen class.  Displays the output. 
+    Calculator.Screen = function(name, options){
+        this.init(name, options);
+    }
+
+    Calculator.Screen.prototype = {
+        init : function(name, options){
+            this.name = name;
+            this.element = $('<div />');
+        }
+    }
+
+    // Button class.  Takes user input.
+    Calculator.Button = function(name, screen, options){
+        this.init(name, screen, options);
+    };
+
+    Calculator.Button.prototype = {
+        init : function(value, screen, options){
+            this.name = value;
+            this.screen = screen;
+            this.element = $('<div />')
+                .addClass(options.css.button)
+                .html('<span>' + value + '</span>')
+                .mousedown(function(evt){
+                    $(evt.target).addClass(options.css.active);
+                })
+                .bind('mouseleave mouseup', function(evt){
+                    $(evt.target).removeClass(options.css.active);
+                })
+                .click($.proxy(function(){
+                    this.run(); 
+                }, this));
+            return this;
+        },
+        run : function(){
+            console.log(this.name); 
+        }
     };
 
 })(jQuery);
