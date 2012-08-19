@@ -17,15 +17,18 @@
     $.fn.extend({ 
         jscalc: function(options) {
             var defaults = {
-                height: '300px',
-                width: '300px',
+                height: 300,
+                width: 300,
+                maxchars: 15,
                 css : {
                     container : 'jscalc',
                     button: 'button',
                     first: 'first',
+                    screen: 'screen',
                     active: 'active'
                 },
                 buttons : [
+                    ['', '', '', '', 'C'],
                     ['7', '8', '9', '/', 'sqrt'],
                     ['4', '5', '6', '*', '%'],
                     ['1', '2', '3', '-', '1/x'],
@@ -48,6 +51,7 @@
 
     Calculator.prototype = {
         init : function(container, options) {
+            this.options = options;
             this.container = $(container)
                 .height(options.height)
                 .width(options.width)
@@ -55,14 +59,18 @@
 
             var defaults, calc, operations;
            
-            // Set up screen element
+            // Determine cell heights and widths
+            this.options.cellHeight = Math.floor(options.height / options.buttons.length + 1)
+            this.options.cellWidth = Math.floor(options.width / options.buttons[0].length);
+
+            // Create & resize screen
             var screen = this.screen = new Calculator.Screen('screen', options);
 
-            // Append screen to DOM
+            // Append screen element to DOM
             screen.element
                 .appendTo(this.container);
  
-            // Set up button elements
+            // Create buttons
             this.buttons = {};
             for (var i in options.buttons){
                 var row = options.buttons[i];
@@ -89,7 +97,23 @@
     Calculator.Screen.prototype = {
         init : function(name, options){
             this.name = name;
-            this.element = $('<div />');
+            this.options = options;
+            this.span = $('<span>0</span>');
+            this.element = $('<div />')
+                .height(options.cellHeight)
+                .width(options.width)
+                .addClass(options.css.screen)
+                .append(this.span);
+            return this;
+        },
+
+        display : function(value){
+            var val = this.span.text()
+            val = (val == 0) ? '' : val;
+            if (val.length > this.options.maxchars)
+                return;
+            this.span.text(val + '' + value);
+            return;
         }
     }
 
@@ -103,6 +127,8 @@
             this.name = value;
             this.screen = screen;
             this.element = $('<div />')
+                .height(options.cellHeight)
+                .width(options.cellWidth)
                 .addClass(options.css.button)
                 .html('<span>' + value + '</span>')
                 .mousedown(function(evt){
@@ -118,6 +144,7 @@
         },
         run : function(){
             console.log(this.name); 
+            this.screen.display(this.name);
         }
     };
 

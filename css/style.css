@@ -2,15 +2,28 @@
     position: relative;
     padding: 20px;
     border: 1px solid #ddd;
+   
+    /* Prevent text selection via http://stackoverflow.com/questions/826782/css-rule-to-disable-text-selection-highlighting */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;  
 }
 
 .jscalc .screen{
-    background: #ddd;
+    background: #eee;
+}
+
+.jscalc .screen span{
+    display: block;
+    text-align: right;
+    font-size: 2em;
+    padding: .4em 0;
 }
 
 .jscalc .button{
-    height: 60px;
-    width: 60px;
     text-align: center;
     float: left;
     cursor: pointer;
@@ -48,14 +61,6 @@
     color: #555;
     font-size: 1.5em;
     text-shadow: .1em .1em .05em #ffffff;
-   
-    /* Prevent text selection via http://stackoverflow.com/questions/826782/css-rule-to-disable-text-selection-highlighting */
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;  
 }
 
 .clear{
