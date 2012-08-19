@@ -100,7 +100,7 @@
             var expression = this.screen.getExpression();
             try{
                 if (!this.validate(expression))
-                    throw new Error "Validation failed.";
+                    throw new Error("Validation failed.");
             } catch (e){
                 console.log(e.name + " " + e.message);
             }
