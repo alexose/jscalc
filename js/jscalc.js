@@ -59,7 +59,7 @@
             var defaults, calc, operations;
            
             // Determine cell heights and widths
-            this.options.cellHeight = Math.floor(options.height / options.buttons.length + 1)
+            this.options.cellHeight = Math.floor(options.height / (options.buttons.length + 1))
             this.options.cellWidth = Math.floor(options.width / options.buttons[0].length);
 
             // Create & resize screen
