@@ -102,6 +102,7 @@
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.width)
+                .css({'line-height': options.cellHeight + 'px'}) 
                 .addClass(options.css.screen)
                 .append(this.span);
             return this;
@@ -129,6 +130,7 @@
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.cellWidth)
+                .css({'line-height': options.cellHeight + 'px'}) 
                 .addClass(options.css.button)
                 .html('<span>' + value + '</span>')
                 .mousedown(function(evt){

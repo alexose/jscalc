@@ -20,7 +20,6 @@
     display: block;
     text-align: right;
     font-size: 2em;
-    padding: .4em 0;
 }
 
 .jscalc .button{
@@ -57,7 +56,6 @@
 .jscalc .button span{
     pointer-events:none;
     display: block;
-    padding: .7em 0;
     color: #555;
     font-size: 1.5em;
     text-shadow: .1em .1em .05em #ffffff;
