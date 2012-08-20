@@ -20,6 +20,7 @@
                 height: 300,
                 width: 300,
                 maxchars: 15,
+                keyboard: true,
                 css : {
                     container : 'jscalc',
                     button: 'button',
@@ -91,6 +92,41 @@
                         .appendTo(this.container);
                 }
             }
+            
+            if (this.options.keyboard){
+                // Set up keypress events in a somewhat cross-browser way
+                // see: http://unixpapa.com/js/key.html
+                $(document).keypress($.proxy(function(e) {
+                    var key = String.fromCharCode(e.charCode);
+                    if (this.isButton(key))
+                        this.buttons[key].element.click(); 
+                }, this));
+
+                // Special effect: Trigger keypresses
+                $(document).keydown($.proxy(function(e) {
+                    if (e.shiftKey) return;
+                    var key = String.fromCharCode(e.keyCode);
+                    if (this.isButton(key))
+                        this.buttons[key].element.addClass('active'); 
+                }, this));
+                $(document).keyup($.proxy(function(e) {
+                    if (e.shiftKey) return;
+                    var key = String.fromCharCode(e.keyCode);
+                    if (this.isButton(key))
+                        this.buttons[key].element.removeClass('active'); 
+                }, this));
+            } 
+        },
+
+        isButton : function(value){
+            for (var i in this.options.buttons){
+                var row = this.options.buttons[i];
+                for (var c in row){
+                    var button = row[c];
+                    if (button == value) return true;
+                }
+            }
+            return false;
         },
 
         clear : function(){
@@ -134,14 +170,32 @@
             // Recursive function to break apart parenthetical statements
             var breakApart = function(expression){
                 if (expression.indexOf('(') !== -1)
-                    breakApart(expression.match(/\((.*?)\)/));    
+                    breakApart(expression.match(/\((.*?)\)/)[1]);    
                 else
                     calculate(expression)
             };
-
+            
+            // Function to solve non-parentetical statements
             var calculate = function(expression){
-                console.log(expression)
+                // Apply order of operations
+                // We've already dealt with parentheses here, so this is just EMDAS.
+                // TODO: support exponents
+                var arr;
+                console.log(expression);
+                // Multiply
+                arr = expression.split('*');
+                             
+ 
+                // Divide
+
+                // Add
+  
+                // Subtract
+                console.log(result);
+                return result;
             };
+
+            // Begin operations
             breakApart(expression);
         }
     };
