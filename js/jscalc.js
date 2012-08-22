@@ -35,7 +35,7 @@
                     ['1', '2', '3', '-', '1/x'],
                     ['0', '+/-', '.', '+', '=']
                 ],
-                operators : [
+                functions : [
                     { '=' : 'solve' },
                     { '1/x' : 'inverse' },
                     { '%' : 'percentage' },
@@ -66,7 +66,7 @@
                 .width(options.width)
                 .addClass(options.css.container);
 
-            var defaults, calc, operations;
+            var defaults, calc, functions;
            
             // Determine cell heights and widths
             this.options.cellHeight = Math.floor(options.height / (options.buttons.length + 1))
@@ -147,31 +147,94 @@
             return;
         },
 
-        solve : function(){
-            var expression = this.screen.getExpression();
+        solve : function(expression){
+            expression = expression || this.screen.getExpression();
+           
             try{
-                if (this.validate(expression))
+                if (!this.validate(expression))
                     throw new Error("Validation failed.");
             } catch (e){
                 console.log(e.name + " " + e.message);
+                return;
             }
 
-            // Check for parenthesis
-            if (this.string.indexOf('(') !== -1){
-                // If there are parenthesis, break it apart and solve the smaller chunk
-                var str = this.string.match(/\((.*?)\)/)[1];
+
+            // Add implied * operators
+            expression = expression.replace(/(\d)([\(])/g, "$1*$2")
+           
             
+            var result = this.calculate(expression);
+
             // Done!
-            console.log('SOLVED. ' + expression.solve());
+            console.log('SOLVED. ' + result);
             
-        }
+        },
+
+        // Calculates the solution
+        calculate : function(e){
+            var pos = this.innerMostPos(e)
+            var string = e.slice(pos.start, pos.end);
+
+            e = e.slice(0, pos.start)
+                + this.crunch(string) 
+                + e.slice(pos.end, e.length);
+
+            console.log(e)
+            var result = string;
+            return result;
+        },
+
+        // Finds innermost, leftmost parenthesis and returns its position in the string
+        innerMostPos : function(e){
+            var max = 0;
+            var level = 0;
+            var arr = [];
+            for (var i in e){
+                if (e[i] == "(") level++;
+                if (e[i] == ")") level--;
+                arr.push(level);
+                max = Math.max(level, max);
+            }
+
+            var result = {};
+            var flag = false;
+            for (i in arr){
+                if (arr[i] == max && !flag){
+                    result.start = parseInt(i);
+                    flag = true;
+                }
+                if (arr[i] != max && flag){
+                    result.end = parseInt(i) + 1;
+                    break;
+                }
+            }
+            return result;
+        },
+        
+        // Calculates non-parenthetical statements
+        crunch : function(expression){
+            var operators = [
+                ['*', function(m, f, s){ return f * s}],
+                ['/', function(m, f, s){ return f / s }],
+                ['+', function(m, f, s){ return f + s}],
+                ['-', function(m,f,s){ return f - s}] 
+            ];
+
+            var result;
+            for (var i in operators){
+                var symbol = operators[i][0];
+                var method = operators[i][1];
+                var regex = new RegExp('(\\d)+\\' + symbol + '(\\d)+', 'g');
+                result = expression.replace(regex, method); 
+            }
+            return result;
+        },
         
         validate : function(string){
-            // Match parentheses
+            // Balance parentheses
             if (string.split('(').length !== string.split(')').length)
                 return false;
             
-            // Prevent divide by zero
             if (string == 0)
                 return false;
 
@@ -202,7 +265,7 @@
         init : function(name, options){
             this.name = name;
             this.options = options;
-            this.span = $('<span>0</span>');
+            this.span = $('<span>8+12(3-2(5/3))</span>');
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.width)
@@ -241,10 +304,10 @@
             this.calculator = calculator;
             var options = this.options = calculator.options;
 
-            // Match this button against available operators
+            // Match this button against available functions
             // TODO: avoid these nested for loops
-            for (var i in options.operators){
-                var obj = options.operators[i];
+            for (var i in options.functions){
+                var obj = options.functions[i];
                 for (var name in obj){ 
                     if (this.name == name){
                         var method = obj[name];
