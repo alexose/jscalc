@@ -133,7 +133,8 @@
             this.screen.setExpression('');
             return;
         },
-        
+       
+        // TODO: finish following functions
         percentage : function(){
             return;
         },
@@ -146,59 +147,82 @@
             return;
         },
 
-        validate : function(expression){
+        solve : function(){
+            var expression = this.screen.getExpression();
+            try{
+                if (expression.validate())
+                    throw new Error("Validation failed.");
+            } catch (e){
+                console.log(e.name + " " + e.message);
+            }
+
+            console.log('SOLVED. ' + expression.solve());
+            
+        }
+    };
+
+    Calculator.Expression = function(string, parent){
+        this.init(string, parent);
+    }
+
+    Calculator.Expression.prototype = {
+        init : function(string, parent){
+            this.string = string;
+
+            // TODO: Add exponent support
+            this.operators = ['*','/','+','-'] 
+        },
+        
+        validate : function(){
+            var string = this.string;
             // Match parentheses
-            if (expression.split('(').length !== expression.split(')').length)
+            if (string.split('(').length !== string.split(')').length)
                 return false;
             
             // Prevent divide by zero
-            if (expression == 0)
+            if (string == 0)
                 return false;
 
             return true;
         },
 
         solve : function(){
-            var expression = this.screen.getExpression();
-            try{
-                if (!this.validate(expression))
-                    throw new Error("Validation failed.");
-            } catch (e){
-                console.log(e.name + " " + e.message);
-            }
-
-            // Recursive function to break apart parenthetical statements
-            var breakApart = function(expression){
-                if (expression.indexOf('(') !== -1)
-                    breakApart(expression.match(/\((.*?)\)/)[1]);    
-                else
-                    calculate(expression)
-            };
-            
-            // Function to solve non-parentetical statements
-            var calculate = function(expression){
-                // Apply order of operations
-                // We've already dealt with parentheses here, so this is just EMDAS.
-                // TODO: support exponents
-                var arr;
-                console.log(expression);
-                // Multiply
-                arr = expression.split('*');
-                             
- 
-                // Divide
-
-                // Add
-  
-                // Subtract
-                console.log(result);
+            // Check for parenthesis
+            if (this.string.indexOf('(') !== -1){
+                // If there are parenthesis, break it apart and solve the smaller chunk
+                var str = this.string.match(/\((.*?)\)/)[1];
+           } else {
+                // Otherwise, let's identify what operators we have and calculate
+                for (var i in this.operators){
+                    var operator = this.operators[i];
+                    var pos = this.string.indexOf(operator);
+                    if (pos != -1){
+                        // Match numbers
+                        var first  = this.getNum(this.string.slice(0,pos), true);
+                        var second = this.getNum(this.string.slice(pos,this.string.length));
+                        console.log(first,second);
+                    }
+                }
                 return result;
-            };
+            }
+        },
 
-            // Begin operations
-            breakApart(expression);
+        // Given a string, returns digits from beginning
+        getNum : function(string, reverse){
+            if (reverse) string = string.reverse();
+            var num = '';
+            for (var i in string){
+                if (isNaN(parseInt(string[i])))
+                    break;
+                else 
+                    num = num + '' + string[i];
+            }
+            if (reverse) num = num.reverse();
+            return num;
         }
-    };
+
+    }
+
 
     // Screen class.  Displays the output. 
     Calculator.Screen = function(name, options){
@@ -229,7 +253,8 @@
         },
 
         getExpression : function(){
-            return this.span.text();
+            var expression = new Calculator.Expression(this.span.text());
+            return expression;
         },
 
         setExpression : function(value){
