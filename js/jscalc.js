@@ -150,31 +150,23 @@
         solve : function(){
             var expression = this.screen.getExpression();
             try{
-                if (expression.validate())
+                if (this.validate(expression))
                     throw new Error("Validation failed.");
             } catch (e){
                 console.log(e.name + " " + e.message);
             }
 
+            // Check for parenthesis
+            if (this.string.indexOf('(') !== -1){
+                // If there are parenthesis, break it apart and solve the smaller chunk
+                var str = this.string.match(/\((.*?)\)/)[1];
+            
+            // Done!
             console.log('SOLVED. ' + expression.solve());
             
         }
-    };
-
-    Calculator.Expression = function(string, parent){
-        this.init(string, parent);
-    }
-
-    Calculator.Expression.prototype = {
-        init : function(string, parent){
-            this.string = string;
-
-            // TODO: Add exponent support
-            this.operators = ['*','/','+','-'] 
-        },
         
-        validate : function(){
-            var string = this.string;
+        validate : function(string){
             // Match parentheses
             if (string.split('(').length !== string.split(')').length)
                 return false;
@@ -185,28 +177,7 @@
 
             return true;
         },
-
-        solve : function(){
-            // Check for parenthesis
-            if (this.string.indexOf('(') !== -1){
-                // If there are parenthesis, break it apart and solve the smaller chunk
-                var str = this.string.match(/\((.*?)\)/)[1];
-           } else {
-                // Otherwise, let's identify what operators we have and calculate
-                for (var i in this.operators){
-                    var operator = this.operators[i];
-                    var pos = this.string.indexOf(operator);
-                    if (pos != -1){
-                        // Match numbers
-                        var first  = this.getNum(this.string.slice(0,pos), true);
-                        var second = this.getNum(this.string.slice(pos,this.string.length));
-                        console.log(first,second);
-                    }
-                }
-                return result;
-            }
-        },
-
+        
         // Given a string, returns digits from beginning
         getNum : function(string, reverse){
             if (reverse) string = string.reverse();
@@ -220,9 +191,7 @@
             if (reverse) num = num.reverse();
             return num;
         }
-
-    }
-
+    };
 
     // Screen class.  Displays the output. 
     Calculator.Screen = function(name, options){
@@ -253,8 +222,7 @@
         },
 
         getExpression : function(){
-            var expression = new Calculator.Expression(this.span.text());
-            return expression;
+            return this.span.text();
         },
 
         setExpression : function(value){
