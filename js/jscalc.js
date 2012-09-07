@@ -180,7 +180,6 @@
                     + this.crunch(string) 
                     + e.slice(pos.end, e.length);
 
-                console.log(result, string);
                 result = e;
             }
             
@@ -235,7 +234,7 @@
             for (var i in operators){
                 var symbol = operators[i][0];
                 var method = operators[i][1];
-                var regex = new RegExp('(\\d)+\\' + symbol + '(\\d)+', 'g');
+                var regex = new RegExp('(\\d+)+\\' + symbol + '(\\d+)+', 'g');
                 result = result.replace(regex, method);
             }
             return result;
