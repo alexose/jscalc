@@ -275,7 +275,7 @@
         init : function(name, options){
             this.name = name;
             this.options = options;
-            this.span = $('<span>8+12(3-2(5/3))</span>');
+            this.span = $('<span>0</span>');
             this.element = $('<div />')
                 .height(options.cellHeight)
                 .width(options.width)
