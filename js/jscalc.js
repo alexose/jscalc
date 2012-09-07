@@ -130,7 +130,7 @@
         },
 
         clear : function(){
-            this.screen.setExpression('');
+            this.screen.setExpression('0');
             return;
         },
        
@@ -158,30 +158,39 @@
                 return;
             }
 
-
             // Add implied * operators
             expression = expression.replace(/(\d)([\(])/g, "$1*$2")
            
-            
             var result = this.calculate(expression);
 
             // Done!
-            console.log('SOLVED. ' + result);
+            this.screen.setExpression(result);
             
         },
 
         // Calculates the solution
         calculate : function(e){
-            var pos = this.innerMostPos(e)
-            var string = e.slice(pos.start, pos.end);
+            var result = e;
+            while (this.hasParenthesis(e)){
 
-            e = e.slice(0, pos.start)
-                + this.crunch(string) 
-                + e.slice(pos.end, e.length);
+                var pos = this.innerMostPos(result)
+                var string = e.slice(pos.start, pos.end);
 
-            console.log(e)
-            var result = string;
-            return result;
+                e = e.slice(0, pos.start)
+                    + this.crunch(string) 
+                    + e.slice(pos.end, e.length);
+
+                console.log(result, string);
+                result = e;
+            }
+            
+            return this.crunch(result);
+        },
+
+        // Returns true if expression contains parenthesis
+        hasParenthesis : function(e){
+            if (e.indexOf('(') == -1 ) return false;
+            else return true;
         },
 
         // Finds innermost, leftmost parenthesis and returns its position in the string
@@ -214,18 +223,20 @@
         // Calculates non-parenthetical statements
         crunch : function(expression){
             var operators = [
-                ['*', function(m, f, s){ return f * s}],
-                ['/', function(m, f, s){ return f / s }],
-                ['+', function(m, f, s){ return f + s}],
-                ['-', function(m,f,s){ return f - s}] 
+                ['*', function(m, f, s){ return parseFloat(f) * parseFloat(s)}],
+                ['/', function(m, f, s){ return parseFloat(f) / parseFloat(s)}],
+                ['+', function(m, f, s){ return parseFloat(f) + parseFloat(s)}],
+                ['-', function(m, f, s){ return parseFloat(f) - parseFloat(s)}] 
             ];
 
-            var result;
+            // Strip parenthesis, if they exist
+            var result = expression.replace(/[()]/g,'');
+
             for (var i in operators){
                 var symbol = operators[i][0];
                 var method = operators[i][1];
                 var regex = new RegExp('(\\d)+\\' + symbol + '(\\d)+', 'g');
-                result = expression.replace(regex, method); 
+                result = result.replace(regex, method);
             }
             return result;
         },
